@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -67,7 +66,7 @@ public class SimpleMecanumDriveSubsystem extends SubsystemBase {
 
         if (fieldCentric) {
             // Read inverse IMU heading, as the IMU heading is CW positive
-            double botHeading = getHeading();
+            double botHeading = -getHeading();
             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
             x = rotX;
@@ -86,9 +85,9 @@ public class SimpleMecanumDriveSubsystem extends SubsystemBase {
         fieldCentric = !fieldCentric;
     }
 
-    // The actual heading from the IMU, only adjusted so that positive is clockwise
+    // The actual heading from the IMU
     public double getRawHeading() {
-        return -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 
     // The heading we'll use to drive the bot, adjusted for an offset which we can set any time
