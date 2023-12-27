@@ -4,20 +4,14 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-//import org.firstinspires.ftc.teamcode.commands.AlignToTapeCommand;
-//import org.firstinspires.ftc.teamcode.commands.DefaultElevatorCommand;
 import org.firstinspires.ftc.teamcode.commands.DefaultMecanumDriveCommand;
-//import org.firstinspires.ftc.teamcode.commands.ResetElevatorCommand;
-//import org.firstinspires.ftc.teamcode.commands.StrafeForInchesCommand;
-//import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
-//import org.firstinspires.ftc.teamcode.subsystems.GripperSubsystem;
-//import org.firstinspires.ftc.teamcode.subsystems.GroundSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SimpleMecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SimpleServoSubsystem;
 import org.stealthrobotics.library.gamepad.Gamepad;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 
-// mmmfixme
+// TODO
 //   - StealthOpMode changes for next time
 //     - base class for Teleop vs. auto
 //       - auto can reset the auto-to-tele storage, ask for the auto cmd, pump the scheduler loop during init, etc.
@@ -28,19 +22,14 @@ public abstract class Teleop extends StealthOpMode {
 
     // Subsystems
     SimpleMecanumDriveSubsystem drive;
-//    ElevatorSubsystem elevator;
-//    GripperSubsystem gripper;
-//    GroundSensorSubsystem groundSensor;
+    SimpleServoSubsystem servos;
 
     @Override
     public void initialize() {
         // Setup and register all of your subsystems here
         drive = new SimpleMecanumDriveSubsystem(hardwareMap);
-//        elevator = new ElevatorSubsystem(hardwareMap);
-//        gripper = new GripperSubsystem(hardwareMap);
-//        groundSensor = new GroundSensorSubsystem(hardwareMap);
-//        register(drive, elevator, gripper, groundSensor);
-        register(drive);
+        servos = new SimpleServoSubsystem(hardwareMap);
+        register(drive, servos);
 
         // Note: I don't recommend leaving this enabled. As of release 0.4.6 there is a bad
         // memory leak if you disable the dashboard via the opmode, which will cause your opmode
@@ -51,8 +40,8 @@ public abstract class Teleop extends StealthOpMode {
         Gamepad driveGamepad = new Gamepad(gamepad1);
         Gamepad mechGamepad = new Gamepad(gamepad2);
 
-        // Automatically reset the elevator all the way down when we init
-//        schedule(new ResetElevatorCommand(elevator));
+        // Init various subsystems
+        schedule(servos.closeCommand());
 
         // A subsystem's default command runs all the time. Great for drivetrains and such.
         drive.setDefaultCommand(
@@ -65,30 +54,9 @@ public abstract class Teleop extends StealthOpMode {
                 )
         );
 
-//        elevator.setDefaultCommand(
-//                new DefaultElevatorCommand(elevator,
-//                        mechGamepad.left_trigger,
-//                        mechGamepad.right_trigger
-//                )
-//        );
-
         // Setup all of your controllers' buttons and triggers here
         driveGamepad.back.whenActive(() -> drive.togglefieldcentric());
         driveGamepad.y.whenActive(() -> drive.resetHeading());
-//
-//        mechGamepad.left_bumper.whenActive(() -> gripper.open());
-//        mechGamepad.right_bumper.whenActive(() -> gripper.close());
-//
-//        mechGamepad.x.whenActive(new ResetElevatorCommand(elevator));
-//        mechGamepad.dpad_down.whenActive(() -> elevator.setTargetLocation(0.0));
-//        mechGamepad.dpad_left.whenActive(() -> elevator.setTargetLocation(0.37));
-//        mechGamepad.dpad_right.whenActive(() -> elevator.setTargetLocation(0.65));
-//        mechGamepad.dpad_up.whenActive(() -> elevator.setTargetLocation(1.0));
-//
-//        // Random testing
-//        driveGamepad.dpad_left.whenActive(new AlignToTapeCommand(drive, groundSensor, AlignToTapeCommand.Direction.LEFT));
-//        driveGamepad.dpad_right.whenActive(new AlignToTapeCommand(drive, groundSensor, AlignToTapeCommand.Direction.RIGHT));
-//        driveGamepad.dpad_up.whenActive(new StrafeForInchesCommand(drive, 2.0));
     }
 
     /**
