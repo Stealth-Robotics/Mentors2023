@@ -29,7 +29,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -89,9 +88,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+        // NB: don't override the manual caching we setup at the beginning of our opmode!
+//        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+//            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+//        }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(IMU.class, "imu");

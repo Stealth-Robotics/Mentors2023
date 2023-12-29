@@ -13,11 +13,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class SimpleServoSubsystem extends SubsystemBase {
-    private final Servo servo;
-
     public static double OPEN_POSITION = 0.75;
     public static double CLOSE_POSITION = 0.25;
     public static int OPEN_CLOSE_TIME = 300; // ms
+
+    private final Servo servo;
 
     private boolean open = false;
 
