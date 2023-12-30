@@ -33,6 +33,14 @@ public class DriveSubsystem extends SubsystemBase {
         return roadrunnerDrive.isBusy();
     }
 
+    public Pose2d getLastError() {
+        return roadrunnerDrive.getLastError();
+    }
+
+    public void abortTrajectorySequenceRunner() {
+        roadrunnerDrive.abortTrajectorySequenceRunner();
+    }
+
     public void setPoseEstimate(Pose2d poseEstimate) {
         roadrunnerDrive.setPoseEstimate(poseEstimate);
     }

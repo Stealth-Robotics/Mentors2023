@@ -197,6 +197,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
+    public void abortTrajectorySequenceRunner() {
+        trajectorySequenceRunner.abort();
+    }
+
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());

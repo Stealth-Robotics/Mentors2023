@@ -52,6 +52,7 @@ public class TrajectorySequenceRunner {
     private double currentSegmentStartTime;
     private int currentSegmentIndex;
     private int lastSegmentIndex;
+    private boolean abort;
 
     private Pose2d lastPoseError = new Pose2d();
 
@@ -91,6 +92,11 @@ public class TrajectorySequenceRunner {
         currentSegmentStartTime = clock.seconds();
         currentSegmentIndex = 0;
         lastSegmentIndex = -1;
+        abort = false;
+    }
+
+    public void abort() {
+        abort = true;
     }
 
     public @Nullable
@@ -104,7 +110,7 @@ public class TrajectorySequenceRunner {
         SequenceSegment currentSegment = null;
 
         if (currentTrajectorySequence != null) {
-            if (currentSegmentIndex >= currentTrajectorySequence.size()) {
+            if (currentSegmentIndex >= currentTrajectorySequence.size() || abort) {
                 for (TrajectoryMarker marker : remainingMarkers) {
                     marker.getCallback().onMarkerReached();
                 }

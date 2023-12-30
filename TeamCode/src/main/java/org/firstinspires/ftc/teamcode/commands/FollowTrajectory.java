@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.command.CommandBase;
 
@@ -28,13 +29,22 @@ public class FollowTrajectory extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // TODO: safe version that gives us an error and stops the opmode if we don't reach the end post within some margin of error.
         return !driveSubsystem.isBusy();
     }
 
     @Override
     public void end(boolean interrupted) {
-        // TODO: insufficient if interrupted I bet. Check. RR will still be trying to follow the path, all this is doing is stopping the motors
+        if (interrupted) {
+            driveSubsystem.abortTrajectorySequenceRunner();
+        }
         driveSubsystem.stop();
+    }
+
+    public Pose2d getLastError() {
+        return driveSubsystem.getLastError();
+    }
+
+    public Trajectory getTrajectory() {
+        return trajectory;
     }
 }
