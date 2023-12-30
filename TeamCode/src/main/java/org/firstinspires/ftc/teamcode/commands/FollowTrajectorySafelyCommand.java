@@ -17,14 +17,8 @@ public class FollowTrajectorySafelyCommand extends CorrectableCommand<FollowTraj
     public FollowTrajectorySafelyCommand(StealthOpMode opMode,
                                          DriveSubsystem driveSubsystem,
                                          Trajectory trajectory) {
-        super(
-                new FollowTrajectory(driveSubsystem, trajectory),
-                (cmd) -> {
-                    Pose2d lastError = cmd.getLastError();
-                    return Math.abs(lastError.getX()) > allowableError.getX() ||
-                            Math.abs(lastError.getY()) > allowableError.getY() ||
-                            Math.abs(lastError.getHeading()) > allowableError.getHeading();
-                },
+        super(new FollowTrajectory(driveSubsystem, trajectory),
+                FollowTrajectorySafelyCommand::evaulateError,
                 (cmd) -> new EndOpModeCommand(opMode)
         );
     }
@@ -33,15 +27,17 @@ public class FollowTrajectorySafelyCommand extends CorrectableCommand<FollowTraj
                                          DriveSubsystem driveSubsystem,
                                          Trajectory trajectory,
                                          Function<FollowTrajectory, Command> correctionOp) {
-        super(
-                new FollowTrajectory(driveSubsystem, trajectory),
-                (cmd) -> {
-                    Pose2d lastError = cmd.getLastError();
-                    return Math.abs(lastError.getX()) > allowableError.getX() ||
-                            Math.abs(lastError.getY()) > allowableError.getY() ||
-                            Math.abs(lastError.getHeading()) > allowableError.getHeading();
-                },
+        super(new FollowTrajectory(driveSubsystem, trajectory),
+                FollowTrajectorySafelyCommand::evaulateError,
                 correctionOp
         );
+    }
+
+    private static boolean evaulateError(FollowTrajectory cmd) {
+        Pose2d lastError = cmd.getLastError();
+        System.out.println("Current " + cmd.getPoseEstimate() + " -- err " + lastError);
+        return Math.abs(lastError.getX()) > allowableError.getX() ||
+                Math.abs(lastError.getY()) > allowableError.getY() ||
+                Math.abs(lastError.getHeading()) > allowableError.getHeading();
     }
 }

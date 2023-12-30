@@ -47,4 +47,8 @@ public class FollowTrajectory extends CommandBase {
     public Trajectory getTrajectory() {
         return trajectory;
     }
+
+    public Pose2d getPoseEstimate() {
+        return driveSubsystem.getPoseEstimate();
+    }
 }

@@ -38,6 +38,9 @@ public class CorrectableCommand<T extends Command> extends CommandBase {
                 command.end(false);
                 finished = true;
             } else if (interruptPredicate.test(command)) {
+                System.out.printf("CorrectableCommand: error exceeded, interrupting original command (%s) and failing over to the correction.",
+                        command.getName());
+                System.out.flush();
                 command.end(true);
                 correctionCommand = correctionOp.apply(command);
                 correctionCommand.initialize();
