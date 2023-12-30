@@ -24,7 +24,7 @@ import org.stealthrobotics.library.opmodes.StealthAutoOpMode;
 @Autonomous(name = "test auto new", preselectTeleOp = "BLUE | Tele-Op")
 public class TestAutoNew extends StealthAutoOpMode {
 
-    private Command followTrajectorySafelyCommand(DriveSubsystem drive, Trajectory trajectory) {
+    private FollowTrajectorySafelyCommand followTrajectorySafelyCommand(DriveSubsystem drive, Trajectory trajectory) {
         return new FollowTrajectorySafelyCommand(this, drive, trajectory);
     }
 
@@ -51,36 +51,35 @@ public class TestAutoNew extends StealthAutoOpMode {
         //   - SelectCommand, either form
         return new SequentialCommandGroup(
                 new FollowTrajectorySafelyCommand(
-                        this,
                         drive,
                         TestTrajectories.forward,
                         (cmd) -> {
                             double origHeading = cmd.getTrajectory().end().getHeading();
                             Trajectory backUp = TrajectoryBuilder.buildTrajectory(drive.getPoseEstimate())
-                                    .lineToLinearHeading(drive.getPoseEstimate().minus(new Pose2d(6, 0, origHeading)))
+                                    .lineToLinearHeading(drive.getPoseEstimate().minus(new Pose2d(8, 0, origHeading)))
                                     .build();
                             Trajectory slideOver = TrajectoryBuilder.buildTrajectory(backUp.end())
-                                    .strafeRight(4)
+                                    .strafeRight(6)
                                     .build();
-                            Pose2d adj = new Pose2d(0, 4, 0);
-                            Trajectory continueOn = TrajectoryBuilder.buildTrajectory(slideOver.end().minus(adj))
+                            Pose2d adj = new Pose2d(0, 6, 0);
+                            Trajectory continueOn = TrajectoryBuilder.buildTrajectory(slideOver.end().plus(adj))
                                     .lineToLinearHeading(cmd.getTrajectory().end())
                                     .build();
                             return new SequentialCommandGroup(
                                     new FollowTrajectorySafelyCommand(this, drive, backUp),
                                     new FollowTrajectorySafelyCommand(this, drive, slideOver),
-                                    new InstantCommand(() -> drive.setPoseEstimate(drive.getPoseEstimate().minus(adj))),
+                                    new InstantCommand(() -> drive.setPoseEstimate(drive.getPoseEstimate().plus(adj))),
                                     new FollowTrajectorySafelyCommand(this, drive, continueOn)
                             );
                         }
-                ),
+                ).name("forward"),
                 servos.toggleCommand(),
-                new FollowTrajectorySafelyCommand(this, drive, TestTrajectories.back),
+                new FollowTrajectorySafelyCommand(this, drive, TestTrajectories.back).name("back"),
                 servos.toggleCommand(),
                 new WaitCommand(1000),
-                this.followTrajectorySafelyCommand(drive, TestTrajectories.forwardWithTurn),
+                this.followTrajectorySafelyCommand(drive, TestTrajectories.forwardWithTurn).name("forward turn"),
                 servos.toggleCommand(),
-                this.followTrajectorySafelyCommand(drive, TestTrajectories.backWithTurn),
+                this.followTrajectorySafelyCommand(drive, TestTrajectories.backWithTurn).name("back turn"),
                 servos.toggleCommand(),
                 new SaveAutoHeadingCommand(() -> drive.getPoseEstimate().getHeading()),
                 new EndOpModeCommand(this)

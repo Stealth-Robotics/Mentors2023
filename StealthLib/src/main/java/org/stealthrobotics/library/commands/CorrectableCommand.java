@@ -6,9 +6,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-// todo: docs
-//  - correctionOp generates a Command whose requirements must be a subset of the original
-
+/**
+ * Run a {@link Command}, interrupting it and running a correction {@link Command} when there is
+ * too much error.
+ * <p>
+ * Runs the given Command, evaluating the interrupt predicate after each iteration. If it
+ * returns true, the command is interrupted and the correction op is called to generate a correction
+ * command, which is then run.
+ * <p>
+ * Note: the correction op must generate a Command whose requirements are the same as or a subset of
+ * the original Command's requirements.
+ */
 public class CorrectableCommand<T extends Command> extends CommandBase {
     private final T command;
     private final Predicate<T> interruptPredicate;
@@ -17,6 +25,15 @@ public class CorrectableCommand<T extends Command> extends CommandBase {
     private boolean finished = false;
     private Command correctionCommand;
 
+    /**
+     * Creates a new CorrectableCommand. The given command will be run until the interrupt predicate
+     * determines there is too much error. When that occurs, the command is interrupted and the
+     * correction op is called to generate a correction command, which is then run.
+     *
+     * @param command            the command to run
+     * @param interruptPredicate returns true when the command should be interrupted
+     * @param correctionOp       function which takes the original command and generates a correction
+     */
     public CorrectableCommand(T command, Predicate<T> interruptPredicate, Function<T, Command> correctionOp) {
         this.command = command;
         this.interruptPredicate = interruptPredicate;
@@ -29,7 +46,6 @@ public class CorrectableCommand<T extends Command> extends CommandBase {
         command.initialize();
     }
 
-    // mmmfixme: logging
     @Override
     public void execute() {
         if (correctionCommand == null) {

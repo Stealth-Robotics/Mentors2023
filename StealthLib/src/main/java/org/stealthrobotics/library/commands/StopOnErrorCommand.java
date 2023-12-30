@@ -9,11 +9,14 @@ import java.util.function.Predicate;
 /**
  * Stop the OpMode if the given command has too much error.
  * <p>
- * mmmfixme: docs
+ * Runs the given Command, evaluating the interrupt predicate after each iteration. If it
+ * returns true, the command is interrupted and the OpMode is stopped gracefully.
  */
 public class StopOnErrorCommand<T extends Command> extends CorrectableCommand<T> {
     /**
-     * Creates a new command to end the OpMode if the given command has too much error.
+     * Creates a new StopOnErrorCommand. The given command will be run until the interrupt predicate
+     * determines there is too much error. When that occurs, the command is interrupted and the
+     * OpMode is stopped gracefully.
      *
      * @param opMode             the OpMode to end
      * @param command            the command to run and watch for error
